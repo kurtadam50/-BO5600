@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HACI USTA PİŞİRİRİM EVİ | İşletme Yönetimi</title>
+<link rel="stylesheet" href="style.css"></head>
+<body>
+<header><div class="wrap"><h1>HACI USTA PİŞİRİRİM EVİ</h1></div></header>
+<div class="action-menu">
+<button id="menuToggle" class="menu-toggle" type="button" aria-label="İşlem menüsünü aç" aria-expanded="false" aria-controls="actionMenu">
+<span></span><span></span><span></span>
+</button>
+<nav id="actionMenu" class="action-menu-list" aria-label="Yapılacak işlemi seçin" hidden>
+<button class="active" type="button" data-tab="entry">İşlem Ekle</button>
+<button type="button" data-tab="reports">Raporlar</button>
+<button type="button" data-tab="debts">Müşteri Borçları</button>
+<button type="button" data-tab="staff">Personel Harcamaları</button>
+<button type="button" data-tab="backup">Yedekleme</button>
+</nav>
+</div>
+<main>
+<section class="grid">
+<div class="card metric"><div class="label">Mevcut kasa</div><div class="value green" id="cashNow">₺0,00</div></div>
+<div class="card metric"><div class="label">Toplam gelir</div><div class="value green" id="incomeTotal">₺0,00</div></div>
+<div class="card metric"><div class="label">Toplam gider</div><div class="value red" id="expenseTotal">₺0,00</div></div>
+<div class="card metric"><div class="label">Tahmini net sonuç</div><div class="value" id="profitTotal">₺0,00</div></div>
+<div class="card metric"><div class="label">Açık borç alacağı</div><div class="value gold" id="debtTotal">₺0,00</div></div>
+</section>
+<section class="today-strip section" aria-label="Bugünün özeti">
+<div class="today-heading"><div><span class="eyebrow">GÜNLÜK DURUM</span><h2>Bugünün özeti</h2></div><span class="today-date" id="todayDate"></span></div>
+<div class="today-metrics"><div><span>İşlem adedi</span><strong id="todayCount">0</strong></div><div><span>Bugünkü gelir</span><strong class="green" id="todayIncome">₺0,00</strong></div><div><span>Bugünkü gider</span><strong class="red" id="todayExpense">₺0,00</strong></div><div><span>Hesaplanan kapanış</span><strong id="todayCash">₺0,00</strong></div></div>
+</section>
+<section id="entry" class="tabpane active">
+<div class="columns">
+<div class="card">
+<h2>Yeni işlem</h2><p class="small">Günlük hareketlerini hızlıca kaydet ve kasanı güncel tut.</p><form id="entryForm">
+<div class="row"><div><label>Tarih</label><input type="date" id="date" required></div><div><label>İşlem türü</label><select id="type"><option>Gelir</option><option>Gider</option><option>Borç Verdim</option><option>Borç Tahsilatı</option><option>Personel Harcaması</option></select></div></div>
+<label>Tutar (₺)</label><input id="amount" type="number" min=".01" step=".01" required placeholder="Örn. 1250">
+<label>Açıklama</label><input id="description" maxlength="180" placeholder="Satış, malzeme, elektrik faturası...">
+<div class="row"><div><label>Müşteri / kişi</label><input id="person" maxlength="100" placeholder="Müşteri veya borç alan kişi"></div><div><label>Kategori</label><select id="category"><option>Genel</option><option>Satış</option><option>Gıda / Malzeme</option><option>Fatura</option><option>Kira</option><option>Ulaşım</option><option>Personel</option><option>Diğer</option></select></div></div>
+<label>Personel (varsa)</label><input id="staffName" maxlength="100" placeholder="Harcamayı yapan / ilgili personel">
+<div class="actions"><button type="submit" id="submitEntry">İşlemi kaydet</button><button type="button" id="cancelEdit" class="light" hidden>Düzenlemeyi iptal et</button><button type="button" id="clearForm" class="light">Temizle</button></div></form>
+<h3>Gün sonu kasa kapat</h3><label>Tarih</label><input type="date" id="closingDate"><label>Kasada sayılan gerçek para (₺)</label><input type="number" id="closingAmount" min="0" step=".01" placeholder="Gün sonunda kasada kalan"><label>Not</label><input id="closingNote" maxlength="160" placeholder="Kasa teslimi vb.">
+<div class="closing-check" id="closingCheck" aria-live="polite">Gerçek kasa tutarı girildiğinde hesaplanan kasa ile fark burada görünür.</div><div class="actions"><button id="saveClosing" type="button">Gün sonunu kaydet</button></div>
+<p class="notice">Gün sonu kaydı, sonraki günün açılış kasasına otomatik aktarılır. Borç verme kasadan düşer; tahsilat kasaya eklenir.</p>
+</div>
+<div class="card"><h2>Son işlemler</h2><p class="small">Kayıtlarını filtrele, dışa aktar veya yazdır.</p><div class="filters"><div><label>İşlem ara</label><input type="search" id="searchTx" placeholder="Açıklama, kişi veya tutar..."></div><div><label>Başlangıç</label><input type="date" id="fromDate"></div><div><label>Bitiş</label><input type="date" id="toDate"></div><div><label>Tür</label><select id="filterType"><option value="">Tüm türler</option><option>Gelir</option><option>Gider</option><option>Borç Verdim</option><option>Borç Tahsilatı</option><option>Personel Harcaması</option></select></div></div>
+<div class="actions export-actions"><button id="exportCsv">Excel uyumlu CSV indir</button><button id="printReport" class="light">Yazdır / PDF kaydet</button></div>
+<div class="tablewrap"><table><thead><tr><th>Tarih</th><th>Tür</th><th>Açıklama / kişi</th><th class="num">Tutar</th><th>İşlem</th></tr></thead><tbody id="transactions"></tbody></table></div><div id="emptyState" class="empty">Henüz işlem yok.</div></div>
+</div></section>
+<section id="reports" class="tabpane"><div class="card reports-page"><div class="report-title"><div><span class="eyebrow">İŞLETME ANALİZİ</span><h2>Raporlar</h2><p class="small">Günlük, haftalık ve aylık gelir-gider durumunu tek ekrandan takip et.</p></div><button id="printMonthly" class="light">Raporu yazdır / PDF</button></div>
+<section class="report-block"><div class="report-heading"><div><h3>Günlük rapor</h3><p class="small">Seçtiğin günün kasa hareketleri ve sonuçları.</p></div><div class="report-date"><label for="dailyReportDate">Rapor tarihi</label><input type="date" id="dailyReportDate"></div></div><div class="grid section report-metrics"><div class="card metric"><div class="label">İşlem adedi</div><div class="value" id="dayCount">0</div></div><div class="card metric"><div class="label">Günlük gelir</div><div class="value green" id="dayIncome">₺0,00</div></div><div class="card metric"><div class="label">Günlük gider</div><div class="value red" id="dayExpense">₺0,00</div></div><div class="card metric"><div class="label">Net sonuç</div><div class="value" id="dayProfit">₺0,00</div></div><div class="card metric"><div class="label">Gün sonu kasa</div><div class="value" id="dayCash">₺0,00</div></div></div><div class="report-note" id="dayReportNote">Seçilen günün özeti.</div></section>
+<section class="report-block"><div class="report-heading"><div><h3>Haftalık rapor</h3><p class="small">Seçilen tarihin bulunduğu Pazartesi–Pazar haftası.</p></div><div class="report-date"><label for="weekReportDate">Hafta içinden bir gün seç</label><input type="date" id="weekReportDate"></div></div><div class="report-range" id="weekRange">Bu haftanın özeti</div><div class="grid section report-metrics"><div class="card metric"><div class="label">İşlem adedi</div><div class="value" id="weekCount">0</div></div><div class="card metric"><div class="label">Haftalık gelir</div><div class="value green" id="weekIncome">₺0,00</div></div><div class="card metric"><div class="label">Haftalık gider</div><div class="value red" id="weekExpense">₺0,00</div></div><div class="card metric"><div class="label">Net sonuç</div><div class="value" id="weekProfit">₺0,00</div></div><div class="card metric"><div class="label">Personel harcaması</div><div class="value" id="weekStaff">₺0,00</div></div></div><h4>Gün gün hareketler</h4><div class="tablewrap"><table><thead><tr><th>Gün</th><th>İşlem</th><th class="num">Gelir</th><th class="num">Gider</th><th class="num">Net</th></tr></thead><tbody id="weekRows"></tbody></table></div></section>
+<section class="report-block"><div class="report-heading"><div><h3>Aylık kâr-zarar</h3><p class="small">Ay seçerek kategori ve kasa raporunu görüntüle.</p></div><div class="report-date"><label for="reportMonth">Rapor ayı</label><input type="month" id="reportMonth"></div></div><div class="grid section report-metrics"><div class="card metric"><div class="label">Ay geliri</div><div class="value green" id="monthIncome">₺0,00</div></div><div class="card metric"><div class="label">Ay gideri</div><div class="value red" id="monthExpense">₺0,00</div></div><div class="card metric"><div class="label">Ay net kâr/zarar</div><div class="value" id="monthProfit">₺0,00</div></div><div class="card metric"><div class="label">Personel harcaması</div><div class="value" id="monthStaff">₺0,00</div></div></div><h4>Aylık kategori özeti</h4><div class="tablewrap"><table><thead><tr><th>Kategori</th><th>İşlem adedi</th><th class="num">Toplam (₺)</th></tr></thead><tbody id="categoryRows"></tbody></table></div><h4>Günlük kasa özeti</h4><div class="tablewrap"><table><thead><tr><th>Tarih</th><th class="num">Açılış</th><th class="num">Gelir</th><th class="num">Gider</th><th class="num">Borç verildi</th><th class="num">Borç tahsilatı</th><th class="num">Hesaplanan kasa</th><th class="num">Gerçek kapanış</th></tr></thead><tbody id="dailyRows"></tbody></table></div></section></div></section>
+<section id="debts" class="tabpane"><div class="card"><h2>Müşteri borç listesi</h2><p class="notice">Borç veren kişi adıyla “Borç Verdim” işlemi ekle. Ödeme aldığında aynı kişiyle “Borç Tahsilatı” ekle. Bakiye kişi bazında otomatik hesaplanır.</p><div class="tablewrap"><table><thead><tr><th>Müşteri / kişi</th><th class="num">Verilen borç</th><th class="num">Tahsilat</th><th class="num">Kalan borç</th></tr></thead><tbody id="debtRows"></tbody></table></div></div></section>
+<section id="staff" class="tabpane"><div class="card"><h2>Personel harcamaları</h2><p class="notice">İşlem eklerken türü “Personel Harcaması” seçip personel alanını doldur. Bu sayfada kişi bazında toplamları görüntüleyebilirsin.</p><div class="tablewrap"><table><thead><tr><th>Personel</th><th>İşlem adedi</th><th class="num">Toplam harcama</th></tr></thead><tbody id="staffRows"></tbody></table></div></div></section>
+<section id="backup" class="tabpane"><div class="card"><h2>Yedekleme ve veri aktarımı</h2><p>Kayıtlar bu cihazdaki tarayıcıda saklanır.</p><div class="notice" id="storageStatus" role="status">Kayıtlar kontrol ediliyor…</div><div class="actions"><button id="backupJson">Yedek indir (JSON)</button><label class="file-picker"><span class="pill">JSON yedeğini içe aktar</span><input type="file" id="importJson" accept=".json,application/json" hidden></label></div><p class="notice">Her kayıt değişikliğinde arka planda otomatik yedek oluşturulur ve ana kayıtlar bulunamazsa açılışta geri yüklenir. Yedek bu tarayıcı ve cihazda kalır; tarayıcı verileri silinirse etkilenebilir. Cihaz dışında saklamak için JSON yedeğini indir. Excel’de açmak için CSV indirebilir, yazdır düğmesiyle PDF kaydedebilirsiniz.</p></div></section>
+</main>
+<script src="app.js" defer></script>
+</body></html>
